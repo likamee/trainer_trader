@@ -14,13 +14,19 @@ RUN apt-get update \
   && cd /usr/local/bin \
   && ln -s /usr/bin/python3 python \
   && pip3 install --upgrade pip \
-  && pip3 install poetry==1.2.0a2
+  && pip3 install poetry==1.2.0a2 \
+  && wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
+  && tar -xvf ta-lib-0.4.0-src.tar.gz \
+  && cd ta-lib/ \
+  && ./configure --prefix=/usr \
+  && make \
+  && make install
+
 
 WORKDIR /home/ml_app
 
 COPY pyproject.toml poetry.lock ./
 RUN poetry install --without dev
-RUN poetry add gunicorn
 
 COPY ml_app/app app
 COPY ml_app/ml_app.py ml_app/config.py ml_app/entrypoint.sh .env ./

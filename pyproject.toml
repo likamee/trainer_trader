@@ -2,12 +2,20 @@
 name = "{{ cookiecutter.project_name }}"
 version = "0.1.0"
 description = ""
-authors = ["FabioCaffarelloTC <fabio.caffarello@tc.com.br>"]
+authors = ["Gabriel Aranha <talk@gabrielaranha.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 Flask = "^2.1.1"
 python-dotenv = "^0.20.0"
+pandas = "^1.4.3"
+numpy = "^1.23.0"
+ray = "^1.13.0"
+oandapyV20 = "^0.7.2"
+psutil = "^5.9.1"
+trendln = "^0.1.10"
+gunicorn = "^20.1.0"
+TA-Lib = "^0.4.24"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
@@ -16,5 +24,5 @@ pytest = "^7.1.1"
 pytest-flask = "^1.2.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0a6", "setuptools>=46.0.0"]
