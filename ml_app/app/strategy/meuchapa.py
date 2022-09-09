@@ -4,7 +4,7 @@ import numpy as np
 import oandapyV20.endpoints.accounts as accounts
 import oandapyV20.endpoints.orders as orders
 import oandapyV20.endpoints.pricing as pricing
-from app.utils.general import calcLastSupres, frmt
+from app.utils.general import calcLastSupres, frmt, frmunit
 from app.utils.indicators import ash2, crossed, kijun_sen, spearman
 from app.utils.loaders import updater
 from oandapyV20.contrib.requests import (MarketOrderRequest, StopLossDetails,
@@ -22,7 +22,7 @@ def tradereal(bars_temp, i, move, direction, bars_aux, strat, supres, cfg, pair)
     units = 1 if direction == "buy" else -1
     tatic = move[0] + 1
 
-    if not calcLastSupres(units, close, pair, supres, bars_temp[9]):
+    if not calcLastSupres(units, close, pair, supres, bars_temp[9], cfg):
         cfg['LOGGER'].info("blocked by supres")
         return move
 
@@ -37,12 +37,13 @@ def tradereal(bars_temp, i, move, direction, bars_aux, strat, supres, cfg, pair)
 
     # calculo do amount de units pra usd e calculo dos quotes usd, gbp e eur
     cdev = pair[round(len(pair)/2):]
-    amntqt = {'USD': [0, 'null'], 'EUR': [0, 'null'], 'GBP': [0, 'null'], 'AUD': [0, 'null'], 'JPY': [0, 'null']}
+    amntqt = {'USD': [0, 'null'], 'EUR': [0, 'null'], 'GBP': [0, 'null'],
+              'AUD': [0, 'null'], 'JPY': [0, 'null'], 'MBTC': [0, 'null']}
     for cqt in amntqt:
         if cdev == cqt:
             amntqt[cqt][0] = 1
             amntqt[cqt][1] = pair
-        else:
+        elif cqt in cfg['BARS'] and cdev in cfg['BARS']:
             qtpair = [key for key in cfg['BARS'] if cqt in key and cdev in key]
             amntqt[cqt][1] = qtpair[0]
 
@@ -57,7 +58,8 @@ def tradereal(bars_temp, i, move, direction, bars_aux, strat, supres, cfg, pair)
             else:
                 amntqt[cqt][0] = float(rp['prices'][0]['closeoutBid'])
 
-    units *= round((balance*(amntqt['usd'][0])*cfg['RISK'])/(1.5*atr))
+    calc_units = frmunit((balance*(amntqt['USD'][0])*cfg['RISK'])/(1.5*atr), pair)
+    units *= calc_units if calc_units != 0 else 0.01
     mop = {"instrument": pair[:round(len(pair)/2)]+'_'+pair[round(len(pair)/2):], "units": units}
 
     drct = 1 if units > 0 else -1
@@ -234,7 +236,7 @@ def condition_trade(bars, indicators, strat):
 def tatic(buys, sells, bars_temp, indicators, bars_aux, c_buy, c_sell, params, move, i, cfg, checkpullbackb=False,
           checkpullbacks=False, pair=False):
     # cross base
-    trade = tradereal if cfg['MODE'] == 'realtime' else tradeback
+    trade = tradereal if cfg['MODE'] == 'realtime' and pair else tradeback
     direction = ""
     notspike = abs((bars_temp[8][i] - indicators['baseline'][i])) < bars_temp[10][i]
 
@@ -270,7 +272,7 @@ def tatic(buys, sells, bars_temp, indicators, bars_aux, c_buy, c_sell, params, m
                 move = trade(bars_temp, i, move, direction, bars_aux, 1, params[-1], cfg, pair)
 
         # cross conf
-        elif i in buys['crossconf'] and i in buys['permbase']:
+        elif i not in buys['crossconf'] and i not in buys['permbase']:
             direction = 'buy'
             if spike:
                 # cont trade

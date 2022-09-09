@@ -18,7 +18,9 @@ def process_realtime(cfg, start):
 
     cfg['LOGGER'] = logging.getLogger(__name__)
 
+    cfg['MODE'] = 'training'
     training.process_training(cfg, start)
+    cfg['MODE'] = 'realtime'
     # bkhours = np.array([['2020','2250']])
     params = {}
     for strat in cfg['STRATEGIES']:
@@ -37,7 +39,7 @@ def process_realtime(cfg, start):
 
     while True:
         now = dt.datetime.now()
-        if(now.minute % 30 != 0):  # if(now.hour % 4 == 1 and now.minute % 59 == 0 and now.minute != 0):
+        if(now.minute % 30 == 0):  # if(now.hour % 4 == 1 and now.minute % 59 == 0 and now.minute != 0):
             movingpairs = loader('moving_pairs.txt', cfg)
 
             bars, aux_bars = initialLoad(cfg)
@@ -61,7 +63,7 @@ def process_realtime(cfg, start):
                     if i in candt and (((bars_temp[2][i] - bars_temp[5][i]) * pips_factor < cfg['SPREAD_CUT'])
                                        and (bars_temp[10][i] * pips_factor) > cfg['ATR_CUT']):
                         move, direction = stg.tatic(buys, sells, bars_temp, indicators, bars_aux, c_buy, c_sell,
-                                                    params[strat], move, i, checkpullbackb[strat][pair],
+                                                    params[strat], move, i, cfg, checkpullbackb[strat][pair],
                                                     checkpullbacks[strat][pair], pair)
                         cfg['LOGGER'].info("%s - processing: direction: %s. state: %s.  strategy: %s",
                                            pair, direction, move[0], strat)
@@ -78,5 +80,7 @@ def process_realtime(cfg, start):
                     else:
                         break
 
+            cfg['MODE'] = 'training'
             training.process_training(cfg, start)
+            cfg['MODE'] = 'realtime'
         time.sleep(10)

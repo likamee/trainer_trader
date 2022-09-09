@@ -33,8 +33,8 @@ class Config(object):
     RISK = 0.007
     C_PREJATR = 1.5
     C_LUCATR = 1
-    ATR_CUT = 1
-    SPREAD_CUT = 2
+    ATR_CUT = 90
+    SPREAD_CUT = 90
 
     # variaveis de parametros
     PARAM_FIT = 7
@@ -52,7 +52,7 @@ class Config(object):
     C1 = 1
     C2 = 1
 
-    BARS = {'MBTCUSD': 0}
+    BARS = {'BTCUSD': 0}
 
     AUX_BARS = BARS.copy()
 

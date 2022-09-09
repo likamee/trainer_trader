@@ -11,19 +11,19 @@ from oandapyV20.exceptions import V20Error
 def calcLastSupres(units, close, pair, supres, date, cfg):
     from datetime import datetime, timedelta
 
-    rq = instruments.InstrumentsCandles(instrument=pair[:3]+'_'+pair[3:],
-                                        params={"count": cfg['NCANDLESR'][supres-1]+2, "granularity": "d"})
+    rq = instruments.InstrumentsCandles(instrument=pair[:round(len(pair)/2)]+'_'+pair[round(len(pair)/2):],
+                                        params={"count": cfg['NCANDLESR'][supres-1]+2, "granularity": "D"})
     while True:
         try:
             temp = cfg['API'].request(rq)
         except V20Error as e:
             cfg['LOGGER'].error("v20error: %s", e)
         else:
-            datef = datetime.strptime(date[:10], '%y-%m-%d')
+            datef = datetime.strptime(date[:10], '%Y-%m-%d')
             datef = datef - timedelta(days=1)
 
             temp = pd.DataFrame(temp['candles'])[:-1]
-            if datetime.strptime(temp.iloc[-1]['time'][:10], '%y-%m-%d') == datef:
+            if datetime.strptime(temp.iloc[-1]['time'][:10], '%Y-%m-%d') == datef:
                 temp = temp.iloc[:-1]
             else:
                 temp = temp.iloc[1:]
@@ -49,7 +49,7 @@ def checktimerange(starttime, endtime, nowtime):
 def checkmovingpairs(pair, movingpairs, cfg):
     found = 0
     try:
-        r = positions.openpositions(accountid=cfg['ACCID'])
+        r = positions.OpenPositions(accountID=cfg['ACCID'])
         open_positions = cfg['API'].request(r)
     except V20Error as e:
         cfg['LOGGER'].error("v20error: %s", e)
@@ -81,7 +81,7 @@ def genmovingpairs(cfg):
     else:
         if type(open_positions['positions']) == list and len(open_positions['positions']) > 0:
             for position in open_positions['positions']:
-                params_atr = {"count": 100, "granularity": "m30"}
+                params_atr = {"count": 100, "granularity": "M30"}
                 request = instruments.InstrumentsCandles(instrument=position['instrument'], params=params_atr)
                 try:
                     bars = cfg['API'].request(request)
@@ -97,7 +97,7 @@ def genmovingpairs(cfg):
 
                 pair = position['instrument'][:3]+position['instrument'][4:]
 
-                if 'tradeids' in position['long']:
+                if 'tradeIDs' in position['long']:
                     direction = 1
                 else:
                     direction = -1
@@ -124,8 +124,18 @@ def barscut(bars_temp, k, cfg, train=True):
 
 
 def frmt(v, instrument):
-    if 'jpy' in instrument:
+    if 'JPY' in instrument:
         value = "%.3f" % float(v)
+    elif 'BTC' in instrument:
+        value = "%.1f" % float(v)
     else:
         value = "%.5f" % float(v)
     return str(value)
+
+
+def frmunit(v, instrument):
+    if 'BTC' in instrument:
+        value = round(v, 2)
+    else:
+        value = round(v)
+    return (value)

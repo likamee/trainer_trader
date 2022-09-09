@@ -12,7 +12,7 @@ from app.utils import loaders
 
 def process_training(cfg, start):
     num_cpus = psutil.cpu_count(logical=True)
-    ray.init(num_cpus=num_cpus)
+    ray.init(num_cpus=num_cpus, ignore_reinit_error=True)
     ray_fitness = ray.remote(fitness_function)
     bars, aux_bars = loaders.initialLoad(cfg)
 
