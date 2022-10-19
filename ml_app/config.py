@@ -30,11 +30,11 @@ class Config(object):
     LIM_WR = 68
     NCANDLESR = [30, 50, 100, 150, 200]
 
-    RISK = 0.007
+    RISK = 0.01
     C_PREJATR = 1.5
     C_LUCATR = 1
-    ATR_CUT = 90
-    SPREAD_CUT = 90
+    ATR_CUT = 10
+    SPREAD_CUT = 4
 
     # variaveis de parametros
     PARAM_FIT = 7
@@ -52,7 +52,8 @@ class Config(object):
     C1 = 1
     C2 = 1
 
-    BARS = {'BTCUSD': 0}
+    # BARS = {'BTCUSD': 0}
+    BARS = {'EURUSD': 0, 'GBPUSD': 0, 'USDJPY': 0, 'AUDUSD': 0, 'USDCAD': 0, 'EURGBP': 0}
 
     AUX_BARS = BARS.copy()
 

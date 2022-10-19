@@ -95,7 +95,8 @@ def fitness_function(bars_temp, aux_bars, params, strat, earnings, per, cfg,
     # acerto_total = (positives/total)*100
 
     for i in range(len(results)):
-        pips_factor = 100 if 'JPY' in results[i, 8] else 1 if 'BTC' or 'LTC' or 'ETH' in results[i, 8] else 10000
+        pips_factor = 100 if 'JPY' in results[i, 8] else 1 if 'BTC' in results[i, 8] or 'LTC' \
+         in results[i, 8] or 'ETH' in results[i, 8] else 10000
 
         mvalidation = stg.calcgain(mvalidation, results, pips_factor, cfg, i)
 

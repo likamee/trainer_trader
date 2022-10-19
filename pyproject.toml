@@ -16,6 +16,7 @@ psutil = "^5.9.1"
 trendln = "^0.1.10"
 gunicorn = "^20.1.0"
 TA-Lib = "^0.4.24"
+pytz = "^2022.5"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

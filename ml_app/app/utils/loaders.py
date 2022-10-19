@@ -327,7 +327,7 @@ def initialLoad(cfg):
 
 
 def loadTrade(pair, bars_eval, aux_bars, params, strat, cfg):
-    pips_factor = 100 if 'JPY' in pair else 1 if 'BTC' or 'LTC' or 'ETH' in pair else 10000
+    pips_factor = 100 if 'JPY' in pair else 1 if 'BTC' in pair or 'LTC' in pair or 'ETH' in pair else 10000
 
     # calc dos indicadores############
     indicators = stg.calc_indicators(bars_eval[pair], params, strat)

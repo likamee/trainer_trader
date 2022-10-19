@@ -19,6 +19,7 @@ def tradereal(bars_temp, i, move, direction, bars_aux, strat, supres, cfg, pair)
     bars_temp = bars_temp[:, i]
     atr = bars_temp[10]
     close = bars_temp[8]
+    spread = abs(bars_temp[2] - bars_temp[5])
     units = 1 if direction == "buy" else -1
     tatic = move[0] + 1
 
@@ -38,13 +39,15 @@ def tradereal(bars_temp, i, move, direction, bars_aux, strat, supres, cfg, pair)
     # calculo do amount de units pra usd e calculo dos quotes usd, gbp e eur
     cdev = pair[round(len(pair)/2):]
     amntqt = {'USD': [0, 'null'], 'EUR': [0, 'null'], 'GBP': [0, 'null'],
-              'AUD': [0, 'null'], 'JPY': [0, 'null'], 'MBTC': [0, 'null']}
+              'AUD': [0, 'null'], 'JPY': [0, 'null'], 'CAD': [0, 'null']}
     for cqt in amntqt:
         if cdev == cqt:
             amntqt[cqt][0] = 1
             amntqt[cqt][1] = pair
-        elif cqt in cfg['BARS'] and cdev in cfg['BARS']:
+        else:
             qtpair = [key for key in cfg['BARS'] if cqt in key and cdev in key]
+            if len(qtpair) == 0:
+                continue
             amntqt[cqt][1] = qtpair[0]
 
             # pegar o preco dos amountquotes
@@ -70,7 +73,7 @@ def tradereal(bars_temp, i, move, direction, bars_aux, strat, supres, cfg, pair)
         mop.update({"stopLossOnFill": StopLossDetails(price=sl).data})
 
     if cfg['C_LUCATR']:   # takeprofit specified? add it
-        tpprice = close + ((cfg['C_LUCATR'] * atr) * drct)
+        tpprice = close + (((cfg['C_LUCATR'] * atr) + spread) * drct)
         tp = frmt(tpprice, pair)  # só pra fxcm
         mop.update({"takeProfitOnFill": TakeProfitDetails(price=tp).data})
 
