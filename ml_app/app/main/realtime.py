@@ -42,6 +42,7 @@ def process_realtime(cfg, start):
         now = dt.datetime.now()
         now = now.astimezone(timezone('America/Sao_Paulo'))
         if now.weekday() < 5 and now.minute % 30 == 0 and (now.hour > 19 or now.hour < 17):
+            trained = False
             movingpairs = loader('moving_pairs.txt', cfg)
             cfg['LOGGER'].info("Searching for operations")
             bars, aux_bars = initialLoad(cfg)
@@ -83,7 +84,6 @@ def process_realtime(cfg, start):
                     else:
                         break
 
-            trained = False if trained else True
         elif now.hour > 17 and now.hour < 19 and trained is False:
             cfg['MODE'] = 'training'
             cfg['LOGGER'].info("starting the training")

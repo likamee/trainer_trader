@@ -30,7 +30,7 @@ class Config(object):
     LIM_WR = 68
     NCANDLESR = [30, 50, 100, 150, 200]
 
-    RISK = 0.01
+    RISK = 0.02
     C_PREJATR = 1.5
     C_LUCATR = 1
     ATR_CUT = 10

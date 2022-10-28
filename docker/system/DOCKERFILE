@@ -10,12 +10,13 @@ ENV  PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 RUN useradd $USER
 
 RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y python3-dev python3-pip \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y python3-dev python3-pip wget \
   && cd /usr/local/bin \
   && ln -s /usr/bin/python3 python \
   && pip3 install --upgrade pip \
-  && pip3 install poetry==1.2.0a2 \
-  && wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
+  && pip3 install poetry==1.2.0a2
+
+RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
   && tar -xvf ta-lib-0.4.0-src.tar.gz \
   && cd ta-lib/ \
   && ./configure --prefix=/usr \
@@ -29,6 +30,7 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry install --without dev
 
 COPY ml_app/app app
+COPY data ./data
 COPY ml_app/ml_app.py ml_app/config.py ml_app/entrypoint.sh .env ./
 RUN chmod +x entrypoint.sh
 
