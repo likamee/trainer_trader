@@ -41,7 +41,7 @@ def process_realtime(cfg, start):
     while True:
         now = dt.datetime.now()
         now = now.astimezone(timezone('America/Sao_Paulo'))
-        if now.weekday() < 5 and now.minute % 30 == 0 and (now.hour > 19 or now.hour < 17):
+        if now.minute % 30 == 0 and (now.hour > 19 or now.hour < 17):
             trained = False
             movingpairs = loader('moving_pairs.txt', cfg)
             cfg['LOGGER'].info("Searching for operations")

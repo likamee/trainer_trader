@@ -47,7 +47,7 @@ class Config(object):
     IMAXREPEATS = 15  # 10
 
     # PSO
-    N_IND = [400, 150]  # ASH, SPEARMAN
+    N_IND = [500, 200]  # ASH, SPEARMAN
     W = 0.5
     C1 = 1
     C2 = 1
