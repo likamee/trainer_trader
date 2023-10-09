@@ -63,24 +63,26 @@ def process_backtest(cfg, start):
             del index
             del dates
 
-            best = np.array([-1000 for _ in range(cfg['PARAM_FIT'])])
             print(f"\033[1;31m, Initiating the optimizer {time()-start:.4f}s \033[1;37m")
-            for r in range(0, cfg['NRUNS']):
-                # call do optimizer
-                b_temp, s_temp = pso(d_test, cfg['PARAMS_MAX'][strat], cfg['PARAMS_MIN'][strat],
-                                     strat, best, aux_bars, cfg, start, r, ray_fitness)
+            best = np.array([-1000 for _ in range(cfg['PARAM_FIT'])])
 
-                print(f"\033[1;31m to optimize {time()-start:.4f}s \033[1;37m")
-                print('--------------')
+            for pair in aux_bars:
+                for r in range(0, cfg['NRUNS']):
+                    # call do optimizer
+                    b_temp, s_temp = pso(d_test[pair], cfg['PARAMS_MAX'][strat], cfg['PARAMS_MIN'][strat],
+                                        strat, best, aux_bars[pair], cfg, start, r, ray_fitness)
 
-                if b_temp[0] > best[0]:
-                    best = b_temp
-                    # sol = s_temp
-                # fim dos runs!
-            best = list(best)
+                    print(f"\033[1;31m to optimize {time()-start:.4f}s \033[1;37m")
+                    print('--------------')
 
-            candidate = fitness_function(d_validation, aux_bars, best[5], strat, earnings,
-                                         per, cfg, best[1], best[0], validation=True)
+                    if b_temp[0] > best[0]:
+                        best = b_temp
+                        # sol = s_temp
+                    # fim dos runs!
+                best = list(best)
+
+                candidate = fitness_function(d_validation, aux_bars, best[5], strat, earnings,
+                                            per, cfg, best[1], best[0], validation=True)
 
             earnings = candidate[6]
 
